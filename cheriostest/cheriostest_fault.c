@@ -156,11 +156,7 @@ CHERIOSTEST(nofault_perm_load,
     "Exercise capability load permission success")
 {
 	char * __capability arrayp = cheri_ptrperm(array, sizeof(array),
-#if defined(__riscv)
-	    CHERI_PERM_READ);
-#else
 	    CHERI_PERM_LOAD);
-#endif
 
 	sink = arrayp[0];
 	cheriostest_success();
@@ -285,11 +281,7 @@ CHERIOSTEST(nofault_perm_store,
     "Exercise capability store permission success")
 {
 	char * __capability arrayp = cheri_ptrperm(array, sizeof(array),
-#ifdef __riscv
-	    CHERI_PERM_WRITE);
-#else
 	    CHERI_PERM_STORE);
-#endif
 
 	arrayp[0] = sink;
 	cheriostest_success();
