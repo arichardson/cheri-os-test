@@ -28,8 +28,8 @@ assert_disjoint_bounds(void *one, void *two, const char *label_one,
     const char *label_two)
 {
 	CHERIOSTEST_VERIFY2(
-	    !cheri_is_address_inbounds(one, cheri_base_get(two)) &&
-	    !cheri_is_address_inbounds(two, cheri_base_get(one)),
+	    !cheritest_cheri_is_address_inbounds(one, cheri_base_get(two)) &&
+	    !cheritest_cheri_is_address_inbounds(two, cheri_base_get(one)),
 	    "%#p (%s) and %#p (%s) overlap", one, label_one, two, label_two);
 }
 

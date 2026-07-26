@@ -48,7 +48,7 @@
 #if defined(__linux__)
 /* Check if the address is between cap.base and cap.top, i.e. in bounds */
 static inline bool
-cheri_is_address_inbounds(const void * __capability cap, ptraddr_t addr)
+cheritest_cheri_is_address_inbounds(const void * __capability cap, ptraddr_t addr)
 {
 	return (addr >= cheri_base_get(cap) &&
 		addr < (cheri_base_get(cap) + cheri_length_get(cap)));
