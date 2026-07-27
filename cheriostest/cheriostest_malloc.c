@@ -36,6 +36,7 @@
  */
 
 #ifdef __FreeBSD__
+#include <sys/mount.h>
 #include <sys/procctl.h>
 
 #include <malloc_np.h>
@@ -259,6 +260,30 @@ child_is_revoking(int pid)
 		cheriostest_failure_errx("child exec failed");
 }
 
+/*
+ * The suid_*_protctl_* tests rely on exec()ing a setuid helper dropping the
+ * revocation setting inherited via procctl(). p9fs does not honour the setuid
+ * bit, so when running straight from a build directory shared with the host
+ * (as cheribuild's --test does) there is no privilege transition and those
+ * tests would report bogus failures.
+ */
+static const char *
+skip_need_suid_helpers_and_cheri_revoke(const struct cheri_test *ctp)
+{
+	struct statfs sb;
+	const char *reason;
+
+	reason = skip_need_cheri_revoke(ctp);
+	if (reason != NULL)
+		return (reason);
+
+	if (statfs(cheriostest_get_helper_dir(), &sb) != 0)
+		return ("could not statfs the helper directory");
+	if (strcmp(sb.f_fstypename, "p9fs") == 0)
+		return ("helpers are on p9fs, which ignores the setuid bit");
+	return (NULL);
+}
+
 static void
 malloc_revocation_ctl_common_procctl(const char *progname,
     bool should_be_revoking, int *procctl_arg)
@@ -370,7 +395,7 @@ CHERIOSTEST(malloc_revocation_ctl_suid_elfnote_enable,
 
 CHERIOSTEST(malloc_revocation_ctl_suid_elfnote_disable_protctl_enable,
     "A binary with elfnote disabling reports revocation is disable",
-    .ct_check_skip = skip_need_cheri_revoke)
+    .ct_check_skip = skip_need_suid_helpers_and_cheri_revoke)
 {
 	int arg = PROC_CHERI_REVOKE_FORCE_ENABLE;
 
@@ -380,7 +405,7 @@ CHERIOSTEST(malloc_revocation_ctl_suid_elfnote_disable_protctl_enable,
 
 CHERIOSTEST(malloc_revocation_ctl_suid_elfnote_enable_protctl_disable,
     "A binary with elfnote enabling reports revocation is enabled",
-    .ct_check_skip = skip_need_cheri_revoke)
+    .ct_check_skip = skip_need_suid_helpers_and_cheri_revoke)
 {
 	int arg = PROC_CHERI_REVOKE_FORCE_DISABLE;
 
