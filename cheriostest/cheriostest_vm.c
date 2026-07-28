@@ -46,9 +46,9 @@
 #include <cheri/cheric.h>
 #elif defined(__linux__)
 #define _GNU_SOURCE
+#endif
 
 #include "cheri/cheric.h"
-#endif
 
 #include <sys/types.h>
 #include <sys/param.h>

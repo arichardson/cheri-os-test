@@ -37,9 +37,9 @@
 #include <sys/sysctl.h>
 #elif defined(__linux__)
 #include <sys/auxv.h>
+#endif
 
 #include "cheri/cherireg.h"
-#endif
 
 #include <stdio.h>
 

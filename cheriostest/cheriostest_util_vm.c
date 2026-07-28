@@ -49,9 +49,9 @@
 #include <string.h>
 
 #include <bsd/sys/queue.h>
+#endif
 
 #include "cheri/cheric.h"
-#endif
 
 #include <unistd.h>
 
