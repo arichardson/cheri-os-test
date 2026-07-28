@@ -188,4 +188,22 @@
     (CHERITEST_CHERI_OTYPE_USER_MAX - CHERITEST_CHERI_OTYPE_USER_MIN + 1)
 #define	CHERITEST_CHERI_SEALCAP_USERSPACE_OFFSET	0x0
 
+/*
+ * The software-defined permissions userspace capabilities are given. CheriBSD
+ * reserves one for its syscall filter, which only code capabilities keep;
+ * CHERI Linux does not, and does not define the macro.
+ */
+#ifdef CHERI_PERM_SYSCALL
+#define	CHERITEST_CHERI_PERMS_SW_USERSPACE				\
+	(CHERITEST_CHERI_PERMS_SWALL &					\
+	    ~(CHERI_PERM_SW_VMEM | CHERI_PERM_SYSCALL))
+#define	CHERITEST_CHERI_PERMS_SW_USERSPACE_CODE				\
+	(CHERITEST_CHERI_PERMS_SW_USERSPACE | CHERI_PERM_SYSCALL)
+#else
+#define	CHERITEST_CHERI_PERMS_SW_USERSPACE				\
+	(CHERITEST_CHERI_PERMS_SWALL & ~CHERI_PERM_SW_VMEM)
+#define	CHERITEST_CHERI_PERMS_SW_USERSPACE_CODE				\
+	CHERITEST_CHERI_PERMS_SW_USERSPACE
+#endif
+
 #endif /* !__SYS_CHERIREG_H__ */
