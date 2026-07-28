@@ -36,9 +36,14 @@
 #ifndef _CHERIOSTEST_COMPAT_H_
 #define _CHERIOSTEST_COMPAT_H_
 
+#if defined(__FreeBSD__)
+#define CHERITEST_PAGE_SIZE	PAGE_SIZE
+#elif defined(__linux__)
+#define CHERITEST_PAGE_SIZE	getpagesize()
+#endif
+
 #define	LIBBSD_NETBSD_VIS	1
 #define	cheritest_nitems(x)	(sizeof((x)) / sizeof((x)[0]))
-#define	CHERITEST_PAGE_SIZE	getpagesize()
 #define CHERITEST_PAGE_SHIFT	(__builtin_ctzl(CHERITEST_PAGE_SIZE))
 #define cheritest_trunc_page(x)	__builtin_align_down(x, CHERITEST_PAGE_SIZE)
 #define cheritest_round_page(x)	__builtin_align_up(x, CHERITEST_PAGE_SIZE)
