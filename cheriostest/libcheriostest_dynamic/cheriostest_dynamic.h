@@ -26,6 +26,8 @@
 #ifndef _CHERIOSTEST_DYNAMIC_H_
 #define _CHERIOSTEST_DYNAMIC_H_
 
+#include <stddef.h>
+
 void cheriostest_dynamic_dummy_func(void);
 void (*cheriostest_dynamic_get_dummy_fptr(void))(void);
 ptraddr_t cheriostest_dynamic_get_dummy_fptr_addr(void);
