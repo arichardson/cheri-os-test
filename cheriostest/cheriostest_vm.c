@@ -968,7 +968,8 @@ CHERIOSTEST(vm_notag_tmpfile_shared,
     .ct_flags = CT_FLAG_SIGNAL | CT_FLAG_SI_ADDR,
     .ct_signum = SIGSEGV,
 #ifdef __FreeBSD__
-    .ct_flags |= CT_FLAG_SI_CODE | CT_FLAG_SI_TRAPNO,
+    .ct_flags = CT_FLAG_SIGNAL | CT_FLAG_SI_ADDR | CT_FLAG_SI_CODE | \
+                CT_FLAG_SI_TRAPNO,
     .ct_si_code = SEGV_STORETAG,
     .ct_si_trapno = TRAPNO_STORE_CAP_PF,
 #endif
