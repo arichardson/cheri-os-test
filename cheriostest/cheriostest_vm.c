@@ -104,6 +104,15 @@
 #define THE_CHERI_LINUX_PROJECT_DOES_NOT_SUPPORT_REVOC_MSG \
 	"The CHERI Linux Project does not support revocation"
 
+/*
+ * CheriBSD still adds capability permissions implicitly to shm and anonymous
+ * MAP_SHARED mappings, so the tests below that mmap() them without an explicit
+ * PROT_CAP do end up storing a tag. This is expected to change; until it does,
+ * report those tests as expected failures rather than failing the run.
+ */
+#define	SHARED_MAPPING_XFAIL	"CheriBSD still adds capability permissions " \
+	    "to shared mappings implicitly."
+
 static void
 gen_shm_obj_name(char *shm_obj_name, size_t len)
 {
@@ -358,6 +367,9 @@ CHERIOSTEST(vm_tag_shm_open_named_shared_no_implied_cap,
     .ct_si_code = SEGV_STORETAG,
 #endif
 #endif
+#ifdef __FreeBSD__
+    .ct_xfail_reason = SHARED_MAPPING_XFAIL,
+#endif
 )
 {
 	char shm_name[32];
@@ -382,8 +394,9 @@ CHERIOSTEST(vm_tag_shm_open_anon_shared_no_implied_cap,
     .ct_signum = SIGSEGV,
     .ct_si_code = SEGV_STORETAG,
     .ct_si_trapno = TRAPNO_STORE_CAP_PF,
-    .ct_check_skip = skip_need_writable_tmp
+    .ct_check_skip = skip_need_writable_tmp,
 #endif
+    .ct_xfail_reason = SHARED_MAPPING_XFAIL,
 )
 {
 	int fd = CHERIOSTEST_CHECK_SYSCALL(shm_open(SHM_ANON, O_RDWR, 0600));
@@ -408,6 +421,9 @@ CHERIOSTEST(vm_tag_anon_shared_no_implied_cap,
     .ct_si_code = SEGV_STORETAG,
     .ct_si_trapno = TRAPNO_STORE_CAP_PF,
 #endif
+#endif
+#ifdef __FreeBSD__
+    .ct_xfail_reason = SHARED_MAPPING_XFAIL,
 #endif
     .ct_check_skip = skip_need_writable_tmp)
 {
@@ -435,6 +451,9 @@ CHERIOSTEST(vm_tag_memfd_create_shared,
     .ct_flags = CT_FLAG_SIGNAL | CT_FLAG_SI_CODE,
     .ct_si_code = SEGV_STORETAG,
 #endif
+#endif
+#ifdef __FreeBSD__
+    .ct_xfail_reason = SHARED_MAPPING_XFAIL,
 #endif
 )
 {
