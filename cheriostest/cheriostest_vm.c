@@ -1803,11 +1803,38 @@ check_hugepages_pool(size_t *p_sizes, int count) {
 }
 #endif
 
+#ifdef __FreeBSD__
+/*
+ * shm_create_largepage() fails with ENOTTY before looking at any of its other
+ * arguments on architectures whose pmap does not set PMAP_HAS_LARGEPAGES,
+ * which currently includes RISC-V.
+ */
+static const char *
+skip_need_shm_largepage(const struct cheri_test *ctp __attribute__((__unused__)))
+{
+	int fd;
+
+	fd = shm_create_largepage(SHM_ANON, O_CREAT | O_RDWR, /*psind*/1,
+	    SHM_LARGEPAGE_ALLOC_DEFAULT, /*mode*/0);
+	if (fd < 0) {
+		if (errno == ENOTTY)
+			return ("largepage shm objects are not supported");
+		return (NULL);
+	}
+	close(fd);
+	return (NULL);
+}
+#endif
+
 /*
  * Builds on FreeBSD testsuite posixshm_test:largepage_basic.
  */
 CHERIOSTEST(vm_large_pages_basic,
-    "Test basic largepage SHM mapping setup and teardown")
+    "Test basic largepage SHM mapping setup and teardown",
+#ifdef __FreeBSD__
+    .ct_check_skip = skip_need_shm_largepage,
+#endif
+    )
 {
 	void *addr;
 #ifdef __FreeBSD__
