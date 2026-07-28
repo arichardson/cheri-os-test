@@ -258,7 +258,7 @@ dotest(int force_pageout)
 		want_tag = tags & 1;					\
 		want_seal = hash & (1 << j);				\
 									\
-		tmp = cheritest_cheri_ptr((void *)(pattern[k] & 0xFFFFFFFF), i);	\
+		tmp = cheri_ptr((void *)(pattern[k] & 0xFFFFFFFF), i);	\
 		if (!want_tag) {					\
 			*(uint64_t *)&tmp = 0xDEADFEEE0000DEAD;		\
 		} else							\
@@ -266,7 +266,7 @@ dotest(int force_pageout)
 									\
 		/* "Randomly" seal. */					\
 		if (want_seal && want_tag) {				\
-			sealer = cheritest_cheri_ptr(				\
+			sealer = cheri_ptr(				\
 			    (void*)(((hash & ~0xFFULL) | j) & 0x007FFFFF),\
 			    ((j << 8) | i | 0x000F0000) & 0x00FFFFFF);	\
 			sealer = cheri_offset_set(sealer, i);		\

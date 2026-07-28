@@ -120,7 +120,7 @@ CHERIOSTEST(fault_bounds, "Exercise capability bounds check failure",
 #ifdef SEGV_CAPBOUNDSERR_DEF_MISSING
 	cheriostest_failure_errx("SEGV_CAPBOUNDSERR is not defined");
 #endif
-	char * __capability arrayp = cheritest_cheri_ptr(array, sizeof(array));
+	char * __capability arrayp = cheri_ptr(array, sizeof(array));
 	int i;
 
 	for (i = 0; i < ARRAY_LEN; i++)
@@ -147,7 +147,7 @@ CHERIOSTEST(fault_perm_load,
 #ifdef SEGV_CAPPERMERR_DEF_MISSING
 	cheriostest_failure_errx("SEGV_CAPPERMERR is not defined");
 #endif
-	char * __capability arrayp = cheritest_cheri_ptrperm(array, sizeof(array), 0);
+	char * __capability arrayp = cheri_ptrperm(array, sizeof(array), 0);
 
 	sink = arrayp[0];
 
@@ -157,7 +157,7 @@ CHERIOSTEST(fault_perm_load,
 CHERIOSTEST(nofault_perm_load,
     "Exercise capability load permission success")
 {
-	char * __capability arrayp = cheritest_cheri_ptrperm(array, sizeof(array),
+	char * __capability arrayp = cheri_ptrperm(array, sizeof(array),
 #if defined(__riscv)
 	    CHERI_PERM_READ);
 #else
@@ -278,7 +278,7 @@ CHERIOSTEST(fault_perm_store,
 #ifdef SEGV_CAPPERMERR_DEF_MISSING
 	cheriostest_failure_errx("SEGV_CAPPERMERR is not defined");
 #endif
-	char * __capability arrayp = cheritest_cheri_ptrperm(array, sizeof(array), 0);
+	char * __capability arrayp = cheri_ptrperm(array, sizeof(array), 0);
 
 	arrayp[0] = sink;
 }
@@ -286,7 +286,7 @@ CHERIOSTEST(fault_perm_store,
 CHERIOSTEST(nofault_perm_store,
     "Exercise capability store permission success")
 {
-	char * __capability arrayp = cheritest_cheri_ptrperm(array, sizeof(array),
+	char * __capability arrayp = cheri_ptrperm(array, sizeof(array),
 #ifdef __riscv
 	    CHERI_PERM_WRITE);
 #else
@@ -314,7 +314,7 @@ CHERIOSTEST(fault_tag, "Store via untagged capability",
 	cheriostest_failure_errx("Signal code SEGV_CAPTAGERR missing");
 #endif
 	char ch;
-	char * __capability chp = cheritest_cheri_ptr(&ch, sizeof(ch));
+	char * __capability chp = cheri_ptr(&ch, sizeof(ch));
 
 	chp = cheri_tag_clear(chp);
 	*chp = '\0';
@@ -326,7 +326,7 @@ CHERIOSTEST(nofault_cfromptr, "Exercise CFromPtr success")
 	void * __capability cb; /* derived from here */
 	char * __capability cd; /* stored into here */
 
-	cb = cheritest_cheri_ptr(buf, 256);
+	cb = cheri_ptr(buf, 256);
 	cd = __builtin_cheri_cap_from_pointer(cb, (ptraddr_t)buf + 10);
 	*cd = '\0';
 	cheriostest_success();

@@ -36,44 +36,20 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-/*
- * Get the top of a capability (i.e. one byte past the last accessible one)
- * XXXPM: Is cheri_gettop() equivalent to cheri_high_get() in cheriintrin.h?
- */
-#define	cheritest_cheri_gettop(cap)	__extension__({			\
-	__typeof__(cap) c = (cap);				\
-	(cheri_base_get(c) + cheri_length_get(c));			\
-})
-
-#define cheritest_cheri_ptr(ptr, len)	\
-	cheri_bounds_set(    \
-	    (__cheri_tocap __typeof__((ptr)[0]) *__capability)ptr, len)
-
-#if defined(__aarch64__)
-#define cheritest_cheri_ptrperm(ptr, len, perm)	\
-	cheri_perms_and(cheritest_cheri_ptr(ptr, len), perm | CHERI_PERM_GLOBAL)
-#elif defined(__riscv_zcheripurecap)
-#define cheritest_cheri_ptrperm(ptr, len, perm)	\
-	cheri_perms_and(cheritest_cheri_ptr(ptr, len), perm)
-#endif
-
 /* Provide macros to make it easier to work with the raw CRAM/CRRL results: */
-#define	CHERITEST_CHERI_REPRESENTABLE_ALIGNMENT(len) \
+#define CHERITEST_CHERI_REPRESENTABLE_ALIGNMENT(len) \
 	(~cheri_representable_alignment_mask(len) + 1)
 
-#define	CHERITEST_CHERI_ALIGN_MASK(l)		~(cheri_representable_alignment_mask(l))
+#define CHERITEST_CHERI_ALIGN_MASK(l)	~(cheri_representable_alignment_mask(l))
 
-/* Get the top of a capability (i.e. one byte past the last accessible one) */
-#define cheri_top_get(cap) __extension__({		\
-	__typeof__(cap) c = (cap);					\
-	(cheri_base_get(c) + cheri_length_get(c));	\
-})
-
+#if defined(__linux__)
 /* Check if the address is between cap.base and cap.top, i.e. in bounds */
 static inline bool
 cheri_is_address_inbounds(const void * __capability cap, ptraddr_t addr)
 {
-	return (addr >= cheri_base_get(cap) && addr < cheri_top_get(cap));
+	return (addr >= cheri_base_get(cap) &&
+		addr < (cheri_base_get(cap) + cheri_length_get(cap)));
 }
+#endif
 
 #endif /* _SYS_CHERIC_H_ */
