@@ -86,10 +86,15 @@ CFLAGS.cheriostest_bounds_subobject.c+=-cheri-bounds=subobject-safe
 
 MAN=
 
-LIBADD+=	util xo bsd
-.if ${.MAKE.OS} == "FreeBSD"
-# Linux doesn't have libprocstat
-LIBADD+=	procstat
+LIBADD+=	util xo
+.if ${.MAKE.OS} == "Linux"
+# Linux requires libbsd for compatibility
+# reasons.
+LIBADD+=	bsd
+.elif ${.MAKE.OS} == "FreeBSD"
+# Linux doesn't have libprocstat and
+# libz is currently not available either
+LIBADD+=	procstat z
 .endif
 
 .ifdef CHERIBSD_DYNAMIC_TESTS
@@ -103,8 +108,8 @@ DPADD+=	${.OBJDIR}/../libcheriostest_dynamic/libcheriostest_dynamic.so
 # On Linux, we are putting the helper libraries in /opt/cheri-os-test/lib to
 # avoid polluting system library search paths.
 LDFLAGS+= -Wl,-rpath=/opt/cheri-os-test/lib/
-LDADD+=	-Wl,--push-state,-Bdynamic -lcheriostest_dynamic -Wl,--pop-state
 .endif
+LDADD+=	-Wl,--push-state,-Bdynamic -lcheriostest_dynamic -Wl,--pop-state
 
 SRCS+=	cheriostest_fptr_canon.c \
 		cheriostest_lazy_bind.c
