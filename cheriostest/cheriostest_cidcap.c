@@ -31,6 +31,7 @@
  */
 
 #ifdef __FreeBSD__
+#include <stdint.h>
 #include <sys/sysctl.h>
 #include <cheri/cidcap.h>
 #endif
@@ -86,7 +87,6 @@ check_cidcap(uintcap_t cidcap, size_t base, size_t length, size_t offset)
 	if (v != 1)
 		cheriostest_failure_errx("tag %jx (expected 1)", v);
 }
-#endif
 
 #ifdef __FreeBSD__
 static uintcap_t
@@ -102,6 +102,7 @@ get_cidcap_sysctl(void)
 	return (cidcap);
 }
 
+# XXXPM: Add tests for CHERI Alliance's AT_CHERI_CID_CAP
 CHERIOSTEST(cidcap_sysctl, "Retrieve cidcap using sysctl(3)")
 {
 	uintcap_t cidcap;
@@ -114,6 +115,7 @@ CHERIOSTEST(cidcap_sysctl, "Retrieve cidcap using sysctl(3)")
 
 	cheriostest_success();
 }
+#endif
 #endif
 
 #if defined(CHERI_PERM_COMPARTMENT_ID) \
